@@ -14,8 +14,13 @@ export interface Person extends Document {
 		/** O salt usado para fazer o hash do password */
 		salt: string
 		/** Hash do salt + password */
-		password_hash: string
+		password_hash: string,
 	}
+	/**
+	 * Checa se o password informado é válido
+	 * @throws InvalidPassword in case it's not
+	 */
+	check_password(password: string): void
 }
 
 /**
@@ -49,6 +54,21 @@ const PersonSchema = new Schema({
 	}
 })
 
+PersonSchema.method('check_password', function(this: Person, password: string) {
+	const password_hash = sha512.create()
+		.update(this.credentials.salt)
+		.update(password)
+		.hex()
+	if (this.credentials.password_hash != password_hash)
+		throw 'InvalidPassword'
+} as Person['check_password'])
+
+/**
+ * Model da collection people, responsável por armazenar as informações dos
+ * usuários
+ */
+const PersonModel = mongoose.model<Person>('Person', PersonSchema)
+
 /** Cria um novo usuário no banco de dados */
 export async function createUser(email: string, password: string) {
 	const salt = randomstring.generate({ length: 32 })
@@ -60,11 +80,5 @@ export async function createUser(email: string, password: string) {
 		}
 	}).save()
 }
-
-/**
- * Model da collection people, responsável por armazenar as informações dos
- * usuários
- */
-const PersonModel = mongoose.model<Person>('Person', PersonSchema)
 
 export default PersonModel

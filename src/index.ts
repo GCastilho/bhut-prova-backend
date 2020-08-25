@@ -1,5 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
+import authentication from './authentication'
 import { createUser } from './db/models/person'
 
 const app = express()
@@ -24,6 +25,9 @@ app.post('/user', async (req, res) => {
 		}
 	}
 })
+
+/** Hanlder de autenticação de usuários */
+app.use(authentication)
 
 app.all('*', (_req, res) => {
 	res.status(404).send({ error: 'Entrypoint not found' })
