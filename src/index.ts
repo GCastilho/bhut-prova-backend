@@ -63,8 +63,6 @@ app.post('/cars', async (req, res) => {
 app.patch('/cars', async (req, res) => {
 	try {
 		const response = await Car.updateMany(req.query, req.body)
-		response.matched = response.n
-		delete response.n
 		res.send(response)
 	} catch (err) {
 		if (err.code == 11000) {
