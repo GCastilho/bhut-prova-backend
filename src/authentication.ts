@@ -49,7 +49,7 @@ router.use(async (req, res, next) => {
 	if (!session)
 		return res.status(401).send({
 			error: 'NotAuthorized',
-			message: 'A valid \'authorization\' header is required to perform this operation'
+			message: 'A valid \'Authorization\' header is required to perform this operation'
 		})
 
 	req.userId = session.userId
